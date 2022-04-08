@@ -52,13 +52,14 @@ const startApp = async () => {
           }]);
           options.watermarkText = text.value; 
           if(fs.existsSync('./img/' + options.inputImage)) {
-            try {
+            
               addTextWatermarkToImage('./img/' + options.inputImage, './img/' + prepareOutputFilename(options.inputImage), options.watermarkText);
-            } catch(error) {
+            } 
+            else {
               console.log('Something went wrong... Try again!!!');
             };
           }  
-      }
+      
       else {
           const image = await inquirer.prompt([{
               name: 'filename',
@@ -68,15 +69,15 @@ const startApp = async () => {
           }]);
           options.watermarkImage = image.filename;
           if(fs.existsSync('./img/' + options.inputImage) && fs.existsSync('./img/' + options.watermarkImage)) {
-            try {
+            
               addImageWatermarkToImage('./img/' + options.inputImage, './img'  + prepareOutputFilename(options.inputImage), './img/' + options.watermarkImage);
             } 
-            catch(error) {
+              else  {
               console.log('Something went wrong... Try again!!!');
             }
           }
       }
-  }
+  
   
   startApp();
 
@@ -86,6 +87,7 @@ const startApp = async () => {
   }
 
 const addTextWatermarkToImage = async function(inputFile, outputFile, text){
+  try {
     const image = await Jimp.read(inputFile);
     const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
     image.print(font, 10, 10, text);
@@ -99,12 +101,17 @@ const addTextWatermarkToImage = async function(inputFile, outputFile, text){
       await image.quality(100).writeAsync(outputFile);
       console.log('Sukces');
       startApp();
+  } catch (error) {
+    console.log(error);
+  }
+    
 };
 
 
 //addTextWatermarkToImage('./test.jpg', './test-with-watermark.jpg', 'Hello world');
 
 const addImageWatermarkToImage = async function(inputFile, outputFile, watermarkFile) {
+  try {
     const image = await Jimp.read(inputFile);
     const watermark = await Jimp.read(watermarkFile);
     const x = image.getWidth() / 2 - watermark.getWidth() / 2;
@@ -117,6 +124,10 @@ const addImageWatermarkToImage = async function(inputFile, outputFile, watermark
     await image.quality(100).writeAsync(outputFile);
     console.log('Sukces');
     startApp();
+  } catch (error) {
+    console.log(error);
+  }
+    
   };
   
   //addImageWatermarkToImage('./test.jpg', './test-with-watermark2.jpg', './logo.png');
